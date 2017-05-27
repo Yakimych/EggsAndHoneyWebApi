@@ -38,9 +38,9 @@ namespace EggsAndHoney.Domain.Services
             return __fakeOrders.Count;
         }
 
-        public int AddOrder(string name, int orderTypeId)
+        public int AddOrder(string name, string orderTypeName)
         {
-            var orderType = __fakeOrderTypes.Single(o => o.Id == orderTypeId);
+            var orderType = __fakeOrderTypes.Single(o => o.Name == orderTypeName);
             var orderToAdd = new Order(__currentFakeOrderId++, name, orderType, DateTime.UtcNow);
 
             __fakeOrders.Add(orderToAdd);

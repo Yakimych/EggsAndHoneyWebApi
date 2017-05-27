@@ -30,5 +30,17 @@ namespace EggsAndHoney.WebApi.Controllers
         {
             return _orderService.GetNumberOfOrders();
         }
+
+        [HttpPost("add")]
+        public void Add([FromBody]AddOrderViewModel addOrderViewModel)
+        {
+            _orderService.AddOrder(addOrderViewModel.Name, addOrderViewModel.Order);
+        }
+
+        [HttpPut("resolve")]
+        public void Resolve([FromBody]ResolveUnresolveOrderViewModel resolveUnresolveOrderViewModel)
+        {
+            _orderService.ResolveOrder(resolveUnresolveOrderViewModel.Id);
+        }
     }
 }

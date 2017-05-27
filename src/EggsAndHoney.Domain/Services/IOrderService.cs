@@ -7,7 +7,7 @@ namespace EggsAndHoney.Domain.Services
     {
         IEnumerable<Order> GetOrders();
         int GetNumberOfOrders();
-        int AddOrder(string name, int orderTypeId);
+        int AddOrder(string name, string orderTypeName);
         IEnumerable<ResolvedOrder> GetResolvedOrders();
         int ResolveOrder(int orderId);
         int UnresolveOrder(int resolvedOrderId);

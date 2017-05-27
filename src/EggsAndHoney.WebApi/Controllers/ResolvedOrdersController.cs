@@ -23,5 +23,11 @@ namespace EggsAndHoney.WebApi.Controllers
             var resolvedOrders = _orderService.GetResolvedOrders();
             return resolvedOrders.Select(o => new ResolvedOrderViewModel(o.Id, o.Name, o.OrderType.Name, o.DatePlaced, o.DateResolved));
         }
+
+        [HttpPut("unresolve")]
+        public void Unresolve([FromBody]ResolveUnresolveOrderViewModel resolveUnresolveOrderViewModel)
+        {
+            _orderService.UnresolveOrder(resolveUnresolveOrderViewModel.Id);
+        }
     }
 }
