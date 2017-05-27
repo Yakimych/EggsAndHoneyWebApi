@@ -6,8 +6,8 @@ namespace EggsAndHoney.WebApi.ViewModels
     {
         public DateTime DateResolved { get; }
 
-        public ResolvedOrderViewModel(string name, string order, DateTime datePlaced, DateTime dateResolved)
-            : base (name, order, datePlaced)
+        public ResolvedOrderViewModel(int id, string name, string order, DateTime datePlaced, DateTime dateResolved)
+            : base (id, name, order, datePlaced)
         {
             DateResolved = dateResolved;
         }

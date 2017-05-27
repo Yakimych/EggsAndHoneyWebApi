@@ -1,5 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
+using EggsAndHoney.Domain.Services;
 using EggsAndHoney.WebApi.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,20 +9,26 @@ namespace EggsAndHoney.WebApi.Controllers
     [Route("api/v1/[controller]")]
     public class OrdersController : Controller
     {
+        private readonly IOrderService _orderService;
+
+        public OrdersController(IOrderService orderService)
+        {
+            _orderService = orderService;
+        }
+
         // GET api/orders
         [HttpGet]
         public IEnumerable<OrderViewModel> Get()
         {
-            var order1 = new OrderViewModel("YaK", "Eggs", DateTime.UtcNow.AddDays(-1));
-            var order2 = new OrderViewModel("Rita", "Honey", DateTime.UtcNow);
-            return new [] { order1, order2 };
+            var orders = _orderService.GetOrders();
+            return orders.Select(o => new OrderViewModel(o.Id, o.Name, o.OrderType.Name, o.DatePlaced));
         }
 
         // GET api/orders/count
         [HttpGet("count")]
         public int GetCount()
         {
-            return 2;
+            return _orderService.GetNumberOfOrders();
         }
     }
 }
