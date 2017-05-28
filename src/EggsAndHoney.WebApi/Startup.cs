@@ -36,6 +36,8 @@ namespace EggsAndHoney.WebApi
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+
             app.UseMvc();
 			app.UseDefaultFiles();
 			app.UseStaticFiles();
