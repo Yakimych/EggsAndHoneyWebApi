@@ -1,6 +1,8 @@
-﻿using EggsAndHoney.Domain.Services;
+﻿using EggsAndHoney.Domain.Models;
+using EggsAndHoney.Domain.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -28,6 +30,8 @@ namespace EggsAndHoney.WebApi
             services.AddMvc();
 
             services.AddTransient<IOrderService, OrderService>();
+            var connectionString = Configuration.GetConnectionString("EggsAndHoneyStaging");
+            services.AddDbContext<OrderContext>(options => options.UseSqlServer(connectionString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
