@@ -53,7 +53,7 @@ namespace EggsAndHoney.Domain.Services
             return __fakeResolvedOrders;
         }
 
-        public int ResolveOrder(int orderId)
+        public ResolvedOrder ResolveOrder(int orderId)
         {
             var orderToResolve = __fakeOrders.Single(o => o.Id == orderId);
             var resolvedOrder = new ResolvedOrder(__currentFakeResolvedOrderId++, orderToResolve, DateTime.UtcNow);
@@ -61,10 +61,10 @@ namespace EggsAndHoney.Domain.Services
             __fakeOrders.Remove(orderToResolve);
             __fakeResolvedOrders.Add(resolvedOrder);
 
-            return resolvedOrder.Id;
+            return resolvedOrder;
         }
 
-        public int UnresolveOrder(int resolvedOrderId)
+        public Order UnresolveOrder(int resolvedOrderId)
         {
             var orderToUnresolve = __fakeResolvedOrders.Single(o => o.Id == resolvedOrderId);
             var unresolvedorder = new Order(__currentFakeOrderId++, orderToUnresolve);
@@ -72,7 +72,7 @@ namespace EggsAndHoney.Domain.Services
             __fakeResolvedOrders.Remove(orderToUnresolve);
             __fakeOrders.Add(unresolvedorder);
 
-            return unresolvedorder.Id;
+            return unresolvedorder;
         }
     }
 }

@@ -16,7 +16,6 @@ namespace EggsAndHoney.WebApi.Controllers
             _orderService = orderService;
         }
 
-        // GET api/orders
         [HttpGet]
         public IEnumerable<OrderViewModel> Get()
         {
@@ -24,7 +23,6 @@ namespace EggsAndHoney.WebApi.Controllers
             return orders.Select(o => new OrderViewModel(o.Id, o.Name, o.OrderType.Name, o.DatePlaced));
         }
 
-        // GET api/orders/count
         [HttpGet("count")]
         public int GetCount()
         {
@@ -37,10 +35,11 @@ namespace EggsAndHoney.WebApi.Controllers
             _orderService.AddOrder(addOrderViewModel.Name, addOrderViewModel.Order);
         }
 
-        [HttpPut("resolve")]
-        public void Resolve([FromBody]ResolveUnresolveOrderViewModel resolveUnresolveOrderViewModel)
+        [HttpPut("resolve/{id}")]
+        public ResolvedOrderViewModel Resolve(int id)
         {
-            _orderService.ResolveOrder(resolveUnresolveOrderViewModel.Id);
+            var resolvedOrder = _orderService.ResolveOrder(id);
+            return new ResolvedOrderViewModel(resolvedOrder.Id, resolvedOrder.Name, resolvedOrder.OrderType.Name, resolvedOrder.DatePlaced, resolvedOrder.DateResolved);
         }
     }
 }
