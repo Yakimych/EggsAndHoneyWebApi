@@ -20,7 +20,9 @@ namespace EggsAndHoney.WebApi.Controllers
         public IEnumerable<ResolvedOrderViewModel> Get()
         {
             var resolvedOrders = _orderService.GetResolvedOrders();
-            return resolvedOrders.Select(o => new ResolvedOrderViewModel(o.Id, o.Name, o.OrderType.Name, o.DatePlaced, o.DateResolved));
+            return resolvedOrders.
+                Select(o => new ResolvedOrderViewModel(o.Id, o.Name, o.OrderType.Name, o.DatePlaced, o.DateResolved)).
+                OrderByDescending(o => o.DateResolved);
         }
 
         [HttpPut("unresolve/{id}")]

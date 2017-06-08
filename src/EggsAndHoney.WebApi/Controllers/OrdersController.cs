@@ -20,7 +20,7 @@ namespace EggsAndHoney.WebApi.Controllers
         public IEnumerable<OrderViewModel> Get()
         {
             var orders = _orderService.GetOrders();
-            return orders.Select(o => new OrderViewModel(o.Id, o.Name, o.OrderType.Name, o.DatePlaced));
+            return orders.Select(o => new OrderViewModel(o.Id, o.Name, o.OrderType.Name, o.DatePlaced)).OrderBy(o => o.DatePlaced);
         }
 
         [HttpGet("count")]
