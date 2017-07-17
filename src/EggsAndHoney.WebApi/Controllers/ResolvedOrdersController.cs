@@ -16,6 +16,7 @@ namespace EggsAndHoney.WebApi.Controllers
         }
 
         [HttpGet]
+		[ProducesResponseType(typeof(ItemCollectionResponseViewModel<ResolvedOrderViewModel>), 200)]
         public IActionResult Get()
         {
             var resolvedOrders = _orderService.GetResolvedOrders();
@@ -28,7 +29,10 @@ namespace EggsAndHoney.WebApi.Controllers
         }
 
         [HttpPost("unresolve")]
-        public IActionResult Unresolve([FromBody]ItemIdentifierViewModel itemIdentifier)
+		[ProducesResponseType(typeof(OrderViewModel), 200)]
+		[ProducesResponseType(400)]
+		[ProducesResponseType(404)]
+		public IActionResult Unresolve([FromBody]ItemIdentifierViewModel itemIdentifier)
         {
             if (itemIdentifier == null || !ModelState.IsValid)
             {

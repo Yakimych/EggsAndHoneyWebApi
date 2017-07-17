@@ -16,7 +16,8 @@ namespace EggsAndHoney.WebApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+		[ProducesResponseType(typeof(ItemCollectionResponseViewModel<OrderViewModel>), 200)]
+		public IActionResult Get()
         {
             var orders = _orderService.GetOrders();
             var ordersViewModels = orders.Select(o => new OrderViewModel(o.Id, o.Name, o.OrderType.Name, o.DatePlaced)).OrderBy(o => o.DatePlaced);
@@ -26,7 +27,8 @@ namespace EggsAndHoney.WebApi.Controllers
         }
 
         [HttpGet("count")]
-        public IActionResult GetCount()
+		[ProducesResponseType(typeof(ItemCountResponseViewModel), 200)]
+		public IActionResult GetCount()
         {
             var numberOfOrders =  _orderService.GetNumberOfOrders();
             var itemCountResponseViewModel = new ItemCountResponseViewModel(numberOfOrders);
@@ -35,7 +37,9 @@ namespace EggsAndHoney.WebApi.Controllers
         }
 
         [HttpPost("add")]
-        public IActionResult Add([FromBody]AddOrderViewModel addOrderViewModel)
+		[ProducesResponseType(201)]
+		[ProducesResponseType(400)]
+		public IActionResult Add([FromBody]AddOrderViewModel addOrderViewModel)
         {
             if (addOrderViewModel == null || !ModelState.IsValid)
             {
@@ -48,7 +52,10 @@ namespace EggsAndHoney.WebApi.Controllers
         }
 
         [HttpPost("resolve")]
-        public IActionResult Resolve([FromBody]ItemIdentifierViewModel itemIdentifier)
+		[ProducesResponseType(typeof(ResolvedOrderViewModel), 200)]
+		[ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+		public IActionResult Resolve([FromBody]ItemIdentifierViewModel itemIdentifier)
         {
             if (itemIdentifier == null || !ModelState.IsValid)
             {

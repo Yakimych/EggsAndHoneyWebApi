@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace EggsAndHoney.WebApi
 {
@@ -28,6 +29,11 @@ namespace EggsAndHoney.WebApi
             services.AddMvc();
 
             services.AddTransient<IOrderService, OrderService>();
+
+			services.AddSwaggerGen(c =>
+			{
+				c.SwaggerDoc("v1", new Info { Title = "Eggs&Honey Web API", Version = "v1" });
+			});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,6 +47,12 @@ namespace EggsAndHoney.WebApi
             app.UseMvc();
 			app.UseDefaultFiles();
 			app.UseStaticFiles();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Eggs&Honey Web API V1");
+            });
         }
     }
 }
