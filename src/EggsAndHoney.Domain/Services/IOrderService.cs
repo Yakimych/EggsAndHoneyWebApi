@@ -8,8 +8,10 @@ namespace EggsAndHoney.Domain.Services
         IEnumerable<Order> GetOrders();
         int GetNumberOfOrders();
         int AddOrder(string name, string orderTypeName);
+        bool OrderExists(int orderId);
         IEnumerable<ResolvedOrder> GetResolvedOrders();
         ResolvedOrder ResolveOrder(int orderId);
+        bool ResolvedOrderExists(int resolvedOrderId);
         Order UnresolveOrder(int resolvedOrderId);
     }
 }

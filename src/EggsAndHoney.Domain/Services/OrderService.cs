@@ -47,6 +47,11 @@ namespace EggsAndHoney.Domain.Services
 
             return orderToAdd.Id;
         }
+        
+        public bool OrderExists(int orderId)
+        {
+            return __fakeOrders.Any(o => o.Id == orderId);
+        }
 
         public IEnumerable<ResolvedOrder> GetResolvedOrders()
         {
@@ -73,6 +78,11 @@ namespace EggsAndHoney.Domain.Services
             __fakeOrders.Add(unresolvedorder);
 
             return unresolvedorder;
+        }
+
+        public bool ResolvedOrderExists(int resolvedOrderId)
+        {
+            return __fakeResolvedOrders.Any(o => o.Id == resolvedOrderId);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿﻿using System.Linq;
 using EggsAndHoney.Domain.Services;
 using EggsAndHoney.WebApi.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -17,29 +16,54 @@ namespace EggsAndHoney.WebApi.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<OrderViewModel> Get()
+        public IActionResult Get()
         {
             var orders = _orderService.GetOrders();
-            return orders.Select(o => new OrderViewModel(o.Id, o.Name, o.OrderType.Name, o.DatePlaced)).OrderBy(o => o.DatePlaced);
+            var ordersViewModels = orders.Select(o => new OrderViewModel(o.Id, o.Name, o.OrderType.Name, o.DatePlaced)).OrderBy(o => o.DatePlaced);
+            var responseViewModel = new ItemCollectionResponseViewModel<OrderViewModel>(ordersViewModels.ToList());
+            
+            return Ok(responseViewModel);
         }
 
         [HttpGet("count")]
-        public int GetCount()
+        public IActionResult GetCount()
         {
-            return _orderService.GetNumberOfOrders();
+            var numberOfOrders =  _orderService.GetNumberOfOrders();
+            var itemCountResponseViewModel = new ItemCountResponseViewModel(numberOfOrders);
+            
+            return Ok(itemCountResponseViewModel);
         }
 
         [HttpPost("add")]
-        public void Add([FromBody]AddOrderViewModel addOrderViewModel)
+        public IActionResult Add([FromBody]AddOrderViewModel addOrderViewModel)
         {
-            _orderService.AddOrder(addOrderViewModel.Name, addOrderViewModel.Order);
+            if (addOrderViewModel == null || !ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            
+            var createdOrderId = _orderService.AddOrder(addOrderViewModel.Name, addOrderViewModel.Order);
+            
+            return StatusCode(201, new { Id = createdOrderId });
         }
 
-        [HttpPut("resolve/{id}")]
-        public ResolvedOrderViewModel Resolve(int id)
+        [HttpPost("resolve")]
+        public IActionResult Resolve([FromBody]ItemIdentifierViewModel itemIdentifier)
         {
-            var resolvedOrder = _orderService.ResolveOrder(id);
-            return new ResolvedOrderViewModel(resolvedOrder.Id, resolvedOrder.Name, resolvedOrder.OrderType.Name, resolvedOrder.DatePlaced, resolvedOrder.DateResolved);
+            if (itemIdentifier == null || !ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            if (!_orderService.OrderExists(itemIdentifier.Id))
+            {
+                return NotFound();
+            }
+
+            var resolvedOrder = _orderService.ResolveOrder(itemIdentifier.Id);
+            var resolvedOrderViewModel = new ResolvedOrderViewModel(resolvedOrder.Id, resolvedOrder.Name, resolvedOrder.OrderType.Name, resolvedOrder.DatePlaced, resolvedOrder.DateResolved);
+            
+            return Ok(resolvedOrderViewModel);
         }
     }
 }

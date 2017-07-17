@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using EggsAndHoney.Domain.Services;
 using EggsAndHoney.WebApi.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -17,19 +16,34 @@ namespace EggsAndHoney.WebApi.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<ResolvedOrderViewModel> Get()
+        public IActionResult Get()
         {
             var resolvedOrders = _orderService.GetResolvedOrders();
-            return resolvedOrders.
-                Select(o => new ResolvedOrderViewModel(o.Id, o.Name, o.OrderType.Name, o.DatePlaced, o.DateResolved)).
-                OrderByDescending(o => o.DateResolved);
+            var resolvedOrderViewModels = resolvedOrders.
+                                            Select(o => new ResolvedOrderViewModel(o.Id, o.Name, o.OrderType.Name, o.DatePlaced, o.DateResolved)).
+                                            OrderByDescending(o => o.DateResolved);
+            var itemCollectionResponseViewModel = new ItemCollectionResponseViewModel<ResolvedOrderViewModel>(resolvedOrderViewModels.ToList());
+
+            return Ok(itemCollectionResponseViewModel);
         }
 
-        [HttpPut("unresolve/{id}")]
-        public OrderViewModel Unresolve(int id)
+        [HttpPost("unresolve")]
+        public IActionResult Unresolve([FromBody]ItemIdentifierViewModel itemIdentifier)
         {
-            var unresolvedOrder = _orderService.UnresolveOrder(id);
-            return new OrderViewModel(unresolvedOrder.Id, unresolvedOrder.Name, unresolvedOrder.OrderType.Name, unresolvedOrder.DatePlaced);
+            if (itemIdentifier == null || !ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            if (!_orderService.ResolvedOrderExists(itemIdentifier.Id))
+            {
+                return NotFound();
+            }
+
+            var unresolvedOrder = _orderService.UnresolveOrder(itemIdentifier.Id);
+            var unresolvedOrderViewModel = new OrderViewModel(unresolvedOrder.Id, unresolvedOrder.Name, unresolvedOrder.OrderType.Name, unresolvedOrder.DatePlaced);
+
+            return Ok(unresolvedOrderViewModel);
         }
     }
 }
