@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using AutoMapper;
 using EggsAndHoney.Domain.Services;
 using EggsAndHoney.WebApi.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -8,10 +10,12 @@ namespace EggsAndHoney.WebApi.Controllers
     [Route("api/v1/[controller]")]
     public class ResolvedOrdersController : Controller
     {
+        private readonly IMapper _mapper;
         private readonly IOrderService _orderService;
 
-        public ResolvedOrdersController(IOrderService orderService)
+        public ResolvedOrdersController(IMapper mapper, IOrderService orderService)
         {
+            _mapper = mapper;
             _orderService = orderService;
         }
 
@@ -20,10 +24,9 @@ namespace EggsAndHoney.WebApi.Controllers
         public IActionResult Get()
         {
             var resolvedOrders = _orderService.GetResolvedOrders();
-            var resolvedOrderViewModels = resolvedOrders.
-                                            Select(o => new ResolvedOrderViewModel(o.Id, o.Name, o.OrderType.Name, o.DatePlaced, o.DateResolved)).
-                                            OrderByDescending(o => o.DateResolved);
-            var itemCollectionResponseViewModel = new ItemCollectionResponseViewModel<ResolvedOrderViewModel>(resolvedOrderViewModels.ToList());
+
+            var resolvedOrderViewModels = _mapper.Map<IList<ResolvedOrderViewModel>>(resolvedOrders.OrderByDescending(o => o.DateResolved));
+            var itemCollectionResponseViewModel = new ItemCollectionResponseViewModel<ResolvedOrderViewModel>(resolvedOrderViewModels);
 
             return Ok(itemCollectionResponseViewModel);
         }
@@ -45,7 +48,7 @@ namespace EggsAndHoney.WebApi.Controllers
             }
 
             var unresolvedOrder = _orderService.UnresolveOrder(itemIdentifier.Id);
-            var unresolvedOrderViewModel = new OrderViewModel(unresolvedOrder.Id, unresolvedOrder.Name, unresolvedOrder.OrderType.Name, unresolvedOrder.DatePlaced);
+            var unresolvedOrderViewModel = _mapper.Map<OrderViewModel>(unresolvedOrder);
 
             return Ok(unresolvedOrderViewModel);
         }

@@ -1,5 +1,7 @@
-﻿﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using EggsAndHoney.Domain.Services;
 using EggsAndHoney.WebApi.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -9,10 +11,12 @@ namespace EggsAndHoney.WebApi.Controllers
     [Route("api/v1/[controller]")]
     public class OrdersController : Controller
     {
+        private readonly IMapper _mapper;
         private readonly IOrderService _orderService;
 
-        public OrdersController(IOrderService orderService)
+        public OrdersController(IMapper mapper, IOrderService orderService)
         {
+            _mapper = mapper;
             _orderService = orderService;
         }
 
@@ -21,7 +25,7 @@ namespace EggsAndHoney.WebApi.Controllers
 		public IActionResult Get()
         {
             var orders = _orderService.GetOrders();
-            var ordersViewModels = orders.Select(o => new OrderViewModel(o.Id, o.Name, o.OrderType.Name, o.DatePlaced)).OrderBy(o => o.DatePlaced);
+            var ordersViewModels = _mapper.Map<IList<OrderViewModel>>(orders.OrderBy(o => o.DatePlaced));
             var responseViewModel = new ItemCollectionResponseViewModel<OrderViewModel>(ordersViewModels.ToList());
             
             return Ok(responseViewModel);
@@ -75,9 +79,9 @@ namespace EggsAndHoney.WebApi.Controllers
             }
 
             var resolvedOrder = _orderService.ResolveOrder(itemIdentifier.Id);
-            var resolvedOrderViewModel = new ResolvedOrderViewModel(resolvedOrder.Id, resolvedOrder.Name, resolvedOrder.OrderType.Name, resolvedOrder.DatePlaced, resolvedOrder.DateResolved);
-            
-            return Ok(resolvedOrderViewModel);
+            var resolvedOrderViewModel = _mapper.Map<ResolvedOrderViewModel>(resolvedOrder);
+
+			return Ok(resolvedOrderViewModel);
         }
     }
 }

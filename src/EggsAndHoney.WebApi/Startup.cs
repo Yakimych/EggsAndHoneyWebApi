@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using AutoMapper;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace EggsAndHoney.WebApi
@@ -28,6 +29,7 @@ namespace EggsAndHoney.WebApi
             // Add framework services.
             services.AddMvc();
 
+            services.AddAutoMapper();
             services.AddTransient<IOrderService, OrderService>();
 
 			services.AddSwaggerGen(c =>
@@ -44,9 +46,9 @@ namespace EggsAndHoney.WebApi
 
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
-            app.UseMvc();
 			app.UseDefaultFiles();
 			app.UseStaticFiles();
+			app.UseMvc();
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
