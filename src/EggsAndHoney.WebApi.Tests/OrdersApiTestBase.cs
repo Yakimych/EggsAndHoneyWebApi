@@ -15,6 +15,7 @@ namespace EggsAndHoney.WebApi.Tests
 
 		protected const string __apiPrefix = "/api/v1";
 		protected static readonly string _ordersEndpoint = $"{__apiPrefix}/orders";
+		protected static readonly string _ordersCountEndpoint = $"{__apiPrefix}/orders/count";
 		protected static readonly string _resolvedOrdersEndpoint = $"{__apiPrefix}/resolvedorders";
 		protected static readonly string _addOrderEndpoint = $"{_ordersEndpoint}/add";
 		protected static readonly string _resolveOrderEndpoint = $"{_ordersEndpoint}/resolve";

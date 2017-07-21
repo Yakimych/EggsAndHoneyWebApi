@@ -56,14 +56,32 @@ namespace EggsAndHoney.WebApi.Tests
 		public async Task AddOrder_WithEmptyBody_ShouldRetun_400BadRequest()
 		{
 			var postContent = new StringContent("", _defaultEncoding, __postContentType);
-            var addResponse = await _client.PostAsync(_addOrderEndpoint, postContent);
+			var addResponse = await _client.PostAsync(_addOrderEndpoint, postContent);
 
 			Assert.Equal(HttpStatusCode.BadRequest, addResponse.StatusCode);
 		}
 
-        [Theory]
+		[Fact]
+		public async Task AddOrder_WithSameNameAndOrderType_SecondTime_ShouldRetun_400BadRequest()
+		{
+			var requestBodyString = JsonConvert.SerializeObject(new { name = "TestName", order = "Eggs" });
+
+			var postContent = new StringContent(requestBodyString, _defaultEncoding, __postContentType);
+			var addResponse = await _client.PostAsync(_addOrderEndpoint, postContent);
+
+            addResponse.EnsureSuccessStatusCode();
+
+            postContent = new StringContent(requestBodyString, _defaultEncoding, __postContentType);
+            var secondAddResponse = await _client.PostAsync(_addOrderEndpoint, postContent);
+
+            Assert.Equal(HttpStatusCode.BadRequest, secondAddResponse.StatusCode);
+		}
+
+		[Theory]
+		[InlineData("TestName", "ReallyLongTestOrderWithLengthOver50Characters123456")]
 		[InlineData("TestName", null)]
 		[InlineData("TestName", "")]
+		[InlineData("ReallyLongTestNameWithLengthOver50Characters1234567890", "TestOrder")]
 		[InlineData(null, "TestOrder")]
 		[InlineData("", "TestOrder")]
 		[InlineData(null, null)]

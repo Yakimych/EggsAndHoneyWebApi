@@ -31,7 +31,6 @@ namespace EggsAndHoney.WebApi.Tests
 			var addedOrderId = await AddOrderAndGetId(orderName, orderType);
 			var fetchedOrders = await GetOrders();
 
-			// TODO: Add test (and code) for preventing adding two orders of same type with the same name
 			AssertOrderIsInList(fetchedOrders, addedOrderId, orderName, orderType);
 		}
 
@@ -68,7 +67,76 @@ namespace EggsAndHoney.WebApi.Tests
             AssertOrderIsInList(fetchedOrders, unresolvedOrderId, orderName, orderType);
 		}
 
-        /* Helper methods */
+        [Theory]
+		[InlineData(1)]
+		[InlineData(2)]
+		[InlineData(5)]
+		[InlineData(10)]
+		public async Task OrdersCount_ShouldIncreaseBy_TheNumberOfAddedOrders(int numberOfOrdersToAdd)
+        {
+            var initialNumberOfOrders = await GetOrdersCount();
+
+            for (var i = 0; i < numberOfOrdersToAdd; i++)
+            {
+				var orderName = Guid.NewGuid().ToString();
+				var orderType = "Eggs";
+
+				await AddOrderAndGetId(orderName, orderType);
+			}
+
+			var finalNumberOfOrders = await GetOrdersCount();
+            var numberOfAddedOrders = finalNumberOfOrders - initialNumberOfOrders;
+
+            Assert.Equal(numberOfOrdersToAdd, numberOfAddedOrders);
+        }
+
+		[Fact]
+		public async Task GetOrders_ShouldReturnOrders_OrderedByDate()
+		{
+			var numberOfOrdersToAdd = 10;
+
+			for (var i = 0; i < numberOfOrdersToAdd; i++)
+			{
+				var orderName = Guid.NewGuid().ToString();
+				var orderType = "Honey";
+
+				await AddOrderAndGetId(orderName, orderType);
+			}
+
+			var fetchedOrders = await GetOrders();
+			var fetchedOrdersInExpectedOrder = fetchedOrders.OrderBy(o => o.DatePlaced).ToList();
+
+			Assert.Equal(fetchedOrdersInExpectedOrder, fetchedOrders);
+		}
+
+		[Fact]
+		public async Task GetResolvedOrders_ShouldReturnOrders_OrderedByDate()
+		{
+			var numberOfOrdersToAdd = 10;
+            var addedOrderIds = new List<int>();
+
+			for (var i = 0; i < numberOfOrdersToAdd; i++)
+			{
+				var orderName = Guid.NewGuid().ToString();
+				var orderType = "Eggs";
+
+				var addedOrderId = await AddOrderAndGetId(orderName, orderType);
+                addedOrderIds.Add(addedOrderId);
+			}
+
+            // Resolve orders in reverse order just to make sure they are not sorted by datePlaced on the server
+            for (var i = addedOrderIds.Count() - 1; i >= 0; i--)
+            {
+                await ResolveOrderAndGetId(addedOrderIds[i]);
+            }
+
+            var fetchedResolvedOrders = await GetResolvedOrders();
+            var fetchedResolvedOrdersInExpectedOrder = fetchedResolvedOrders.OrderByDescending(o => o.DateResolved).ToList();
+
+			Assert.Equal(fetchedResolvedOrdersInExpectedOrder, fetchedResolvedOrders);
+		}
+
+		/* Helper methods */
 		private void AssertOrderIsNotInList(IList<OrderViewModel> orderList, int id, string name, string order)
 		{
 			Assert.False(orderList.Any(o => o.Id == id && o.Name == name && o.Order == order));
@@ -155,5 +223,16 @@ namespace EggsAndHoney.WebApi.Tests
 
 			return fetchedOrderCollectionViewModel.Items;
 		}
+
+        private async Task<int> GetOrdersCount()
+        {
+            var getResponse = await _client.GetAsync(_ordersCountEndpoint);
+			getResponse.EnsureSuccessStatusCode();
+
+			var responseString = await getResponse.Content.ReadAsStringAsync();
+            var itemCountResponseViewModel = JsonConvert.DeserializeObject<ItemCountResponseViewModel>(responseString);
+
+            return itemCountResponseViewModel.Count;
+        }
 	}
 }

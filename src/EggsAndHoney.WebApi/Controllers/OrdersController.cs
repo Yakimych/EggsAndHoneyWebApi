@@ -1,4 +1,5 @@
-﻿﻿using System.Linq;
+﻿﻿using System;
+using System.Linq;
 using EggsAndHoney.Domain.Services;
 using EggsAndHoney.WebApi.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -46,9 +47,15 @@ namespace EggsAndHoney.WebApi.Controllers
                 return BadRequest();
             }
             
-            var createdOrderId = _orderService.AddOrder(addOrderViewModel.Name, addOrderViewModel.Order);
-            
-            return StatusCode(201, new { Id = createdOrderId });
+            try
+            {
+                var createdOrderId = _orderService.AddOrder(addOrderViewModel.Name, addOrderViewModel.Order);
+                return StatusCode(201, new { Id = createdOrderId });
+            }
+            catch (InvalidOperationException)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPost("resolve")]

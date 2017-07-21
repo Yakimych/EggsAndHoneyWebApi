@@ -41,6 +41,10 @@ namespace EggsAndHoney.Domain.Services
         public int AddOrder(string name, string orderTypeName)
         {
             var orderType = __fakeOrderTypes.Single(o => o.Name == orderTypeName);
+
+            if (__fakeOrders.Any(o => o.Name == name && o.OrderType.Id == orderType.Id))
+                throw new InvalidOperationException($"An order for {orderTypeName} has already been placed by {name}.");
+
             var orderToAdd = new Order(__currentFakeOrderId++, name, orderType, DateTime.UtcNow);
 
             __fakeOrders.Add(orderToAdd);
