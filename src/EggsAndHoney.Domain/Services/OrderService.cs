@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using EggsAndHoney.Domain.Models;
 
 namespace EggsAndHoney.Domain.Services
@@ -28,17 +29,17 @@ namespace EggsAndHoney.Domain.Services
             new ResolvedOrder(__currentFakeResolvedOrderId++, "FakeName1", __fakeOrderTypes.First(), DateTime.UtcNow.AddDays(-4), DateTime.UtcNow.AddDays(-4).AddHours(1))
         };
 
-        public IEnumerable<Order> GetOrders()
+        public async Task<IEnumerable<Order>> GetOrders()
         {
             return __fakeOrders;
         }
 
-        public int GetNumberOfOrders()
+        public async Task<int> GetNumberOfOrders()
         {
             return __fakeOrders.Count;
         }
 
-        public int AddOrder(string name, string orderTypeName)
+        public async Task<int> AddOrder(string name, string orderTypeName)
         {
             var orderType = __fakeOrderTypes.Single(o => o.Name == orderTypeName);
 
@@ -52,17 +53,17 @@ namespace EggsAndHoney.Domain.Services
             return orderToAdd.Id;
         }
         
-        public bool OrderExists(int orderId)
+        public async Task<bool> OrderExists(int orderId)
         {
             return __fakeOrders.Any(o => o.Id == orderId);
         }
 
-        public IEnumerable<ResolvedOrder> GetResolvedOrders()
+        public async Task<IEnumerable<ResolvedOrder>> GetResolvedOrders()
         {
             return __fakeResolvedOrders;
         }
 
-        public ResolvedOrder ResolveOrder(int orderId)
+        public async Task<ResolvedOrder> ResolveOrder(int orderId)
         {
             var orderToResolve = __fakeOrders.Single(o => o.Id == orderId);
             var resolvedOrder = new ResolvedOrder(__currentFakeResolvedOrderId++, orderToResolve, DateTime.UtcNow);
@@ -73,7 +74,7 @@ namespace EggsAndHoney.Domain.Services
             return resolvedOrder;
         }
 
-        public Order UnresolveOrder(int resolvedOrderId)
+        public async Task<Order> UnresolveOrder(int resolvedOrderId)
         {
             var orderToUnresolve = __fakeResolvedOrders.Single(o => o.Id == resolvedOrderId);
             var unresolvedorder = new Order(__currentFakeOrderId++, orderToUnresolve);
@@ -84,7 +85,7 @@ namespace EggsAndHoney.Domain.Services
             return unresolvedorder;
         }
 
-        public bool ResolvedOrderExists(int resolvedOrderId)
+        public async Task<bool> ResolvedOrderExists(int resolvedOrderId)
         {
             return __fakeResolvedOrders.Any(o => o.Id == resolvedOrderId);
         }

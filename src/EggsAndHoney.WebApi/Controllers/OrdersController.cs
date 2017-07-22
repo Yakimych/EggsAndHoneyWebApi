@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using EggsAndHoney.Domain.Services;
 using EggsAndHoney.WebApi.ViewModels;
@@ -22,9 +23,9 @@ namespace EggsAndHoney.WebApi.Controllers
 
         [HttpGet]
 		[ProducesResponseType(typeof(ItemCollectionResponseViewModel<OrderViewModel>), 200)]
-		public IActionResult Get()
+		public async Task<IActionResult> Get()
         {
-            var orders = _orderService.GetOrders();
+            var orders = await _orderService.GetOrders();
             var ordersViewModels = _mapper.Map<IList<OrderViewModel>>(orders.OrderBy(o => o.DatePlaced));
             var responseViewModel = new ItemCollectionResponseViewModel<OrderViewModel>(ordersViewModels.ToList());
             
@@ -33,9 +34,9 @@ namespace EggsAndHoney.WebApi.Controllers
 
         [HttpGet("count")]
 		[ProducesResponseType(typeof(ItemCountResponseViewModel), 200)]
-		public IActionResult GetCount()
+		public async Task<IActionResult> GetCount()
         {
-            var numberOfOrders =  _orderService.GetNumberOfOrders();
+            var numberOfOrders = await _orderService.GetNumberOfOrders();
             var itemCountResponseViewModel = new ItemCountResponseViewModel(numberOfOrders);
             
             return Ok(itemCountResponseViewModel);
@@ -44,7 +45,7 @@ namespace EggsAndHoney.WebApi.Controllers
         [HttpPost("add")]
 		[ProducesResponseType(201)]
 		[ProducesResponseType(400)]
-		public IActionResult Add([FromBody]AddOrderViewModel addOrderViewModel)
+		public async Task<IActionResult> Add([FromBody]AddOrderViewModel addOrderViewModel)
         {
             if (addOrderViewModel == null || !ModelState.IsValid)
             {
@@ -53,7 +54,7 @@ namespace EggsAndHoney.WebApi.Controllers
             
             try
             {
-                var createdOrderId = _orderService.AddOrder(addOrderViewModel.Name, addOrderViewModel.Order);
+                var createdOrderId = await _orderService.AddOrder(addOrderViewModel.Name, addOrderViewModel.Order);
                 return StatusCode(201, new { Id = createdOrderId });
             }
             catch (InvalidOperationException)
@@ -66,19 +67,19 @@ namespace EggsAndHoney.WebApi.Controllers
 		[ProducesResponseType(typeof(ResolvedOrderViewModel), 200)]
 		[ProducesResponseType(400)]
         [ProducesResponseType(404)]
-		public IActionResult Resolve([FromBody]ItemIdentifierViewModel itemIdentifier)
+		public async Task<IActionResult> Resolve([FromBody]ItemIdentifierViewModel itemIdentifier)
         {
             if (itemIdentifier == null || !ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            if (!_orderService.OrderExists(itemIdentifier.Id))
+            if (!await _orderService.OrderExists(itemIdentifier.Id))
             {
                 return NotFound();
             }
 
-            var resolvedOrder = _orderService.ResolveOrder(itemIdentifier.Id);
+            var resolvedOrder = await _orderService.ResolveOrder(itemIdentifier.Id);
             var resolvedOrderViewModel = _mapper.Map<ResolvedOrderViewModel>(resolvedOrder);
 
 			return Ok(resolvedOrderViewModel);
