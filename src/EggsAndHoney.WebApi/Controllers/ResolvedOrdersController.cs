@@ -3,12 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using EggsAndHoney.Domain.Services;
+using EggsAndHoney.WebApi.Filters;
 using EggsAndHoney.WebApi.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EggsAndHoney.WebApi.Controllers
 {
     [Route("api/v1/[controller]")]
+    [ValidateModel]
     public class ResolvedOrdersController : Controller
     {
         private readonly IMapper _mapper;
@@ -38,11 +40,6 @@ namespace EggsAndHoney.WebApi.Controllers
 		[ProducesResponseType(404)]
 		public async Task<IActionResult> Unresolve([FromBody]ItemIdentifierViewModel itemIdentifier)
         {
-            if (itemIdentifier == null || !ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
             if (!await _orderService.ResolvedOrderExists(itemIdentifier.Id))
             {
                 return NotFound();

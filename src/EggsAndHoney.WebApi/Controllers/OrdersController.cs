@@ -4,12 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using EggsAndHoney.Domain.Services;
+using EggsAndHoney.WebApi.Filters;
 using EggsAndHoney.WebApi.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EggsAndHoney.WebApi.Controllers
 {
     [Route("api/v1/[controller]")]
+    [ValidateModel]
     public class OrdersController : Controller
     {
         private readonly IMapper _mapper;
@@ -47,11 +49,6 @@ namespace EggsAndHoney.WebApi.Controllers
 		[ProducesResponseType(400)]
 		public async Task<IActionResult> Add([FromBody]AddOrderViewModel addOrderViewModel)
         {
-            if (addOrderViewModel == null || !ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-            
             try
             {
                 var createdOrderId = await _orderService.AddOrder(addOrderViewModel.Name, addOrderViewModel.Order);
@@ -69,11 +66,6 @@ namespace EggsAndHoney.WebApi.Controllers
         [ProducesResponseType(404)]
 		public async Task<IActionResult> Resolve([FromBody]ItemIdentifierViewModel itemIdentifier)
         {
-            if (itemIdentifier == null || !ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
             if (!await _orderService.OrderExists(itemIdentifier.Id))
             {
                 return NotFound();
