@@ -30,7 +30,7 @@ namespace EggsAndHoney.WebApi
             services.AddMvc();
 
             services.AddAutoMapper();
-            services.AddTransient<IOrderService, OrderService>();
+            RegisterOrderService(services);
 
 			services.AddSwaggerGen(c =>
 			{
@@ -56,5 +56,20 @@ namespace EggsAndHoney.WebApi
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Eggs&Honey Web API V1");
             });
         }
+
+        private void RegisterOrderService(IServiceCollection services)
+        {
+            var appSettings = Configuration.GetSection("AppSettings");
+            var useInMemoryServiceSetting = appSettings["UseInMemoryConfiguration"];
+
+            if (bool.TryParse(useInMemoryServiceSetting, out var useInMemoryService) && useInMemoryService)
+            {
+                services.AddTransient<IOrderService, InMemoryOrderService>();
+            }
+            else
+            {
+				services.AddTransient<IOrderService, OrderService>();
+			}
+		}
     }
 }
