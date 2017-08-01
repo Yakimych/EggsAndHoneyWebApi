@@ -49,6 +49,11 @@ namespace EggsAndHoney.WebApi.Controllers
 		[ProducesResponseType(400)]
 		public async Task<IActionResult> Add([FromBody]AddOrderViewModel addOrderViewModel)
         {
+            if (addOrderViewModel == null)
+            {
+                return BadRequest("Request body cannot be empty!");
+            }
+
             try
             {
                 var createdOrderId = await _orderService.AddOrder(addOrderViewModel.Name, addOrderViewModel.Order);
@@ -66,6 +71,11 @@ namespace EggsAndHoney.WebApi.Controllers
         [ProducesResponseType(404)]
 		public async Task<IActionResult> Resolve([FromBody]ItemIdentifierViewModel itemIdentifier)
         {
+			if (itemIdentifier == null)
+			{
+				return BadRequest("Request body cannot be empty!");
+			}
+
             if (!await _orderService.OrderExists(itemIdentifier.Id))
             {
                 return NotFound();

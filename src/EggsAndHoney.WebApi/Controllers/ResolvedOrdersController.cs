@@ -40,6 +40,11 @@ namespace EggsAndHoney.WebApi.Controllers
 		[ProducesResponseType(404)]
 		public async Task<IActionResult> Unresolve([FromBody]ItemIdentifierViewModel itemIdentifier)
         {
+			if (itemIdentifier == null)
+			{
+				return BadRequest("Request body cannot be empty!");
+			}
+
             if (!await _orderService.ResolvedOrderExists(itemIdentifier.Id))
             {
                 return NotFound();
