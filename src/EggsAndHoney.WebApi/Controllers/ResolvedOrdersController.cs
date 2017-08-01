@@ -23,7 +23,7 @@ namespace EggsAndHoney.WebApi.Controllers
         }
 
         [HttpGet]
-		[ProducesResponseType(typeof(ItemCollectionResponseViewModel<ResolvedOrderViewModel>), 200)]
+        [ProducesResponseType(typeof(ItemCollectionResponseViewModel<ResolvedOrderViewModel>), 200)]
         public async Task<IActionResult> Get()
         {
             var resolvedOrders = await _orderService.GetResolvedOrders();
@@ -35,15 +35,15 @@ namespace EggsAndHoney.WebApi.Controllers
         }
 
         [HttpPost("unresolve")]
-		[ProducesResponseType(typeof(OrderViewModel), 200)]
-		[ProducesResponseType(400)]
-		[ProducesResponseType(404)]
-		public async Task<IActionResult> Unresolve([FromBody]ItemIdentifierViewModel itemIdentifier)
+        [ProducesResponseType(typeof(OrderViewModel), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> Unresolve([FromBody]ItemIdentifierViewModel itemIdentifier)
         {
-			if (itemIdentifier == null)
-			{
-				return BadRequest("Request body cannot be empty!");
-			}
+            if (itemIdentifier == null)
+            {
+                return BadRequest("Request body cannot be empty!");
+            }
 
             if (!await _orderService.ResolvedOrderExists(itemIdentifier.Id))
             {

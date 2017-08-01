@@ -8,5 +8,5 @@ namespace EggsAndHoney.WebApi.ViewModels
         public string Name { get; set; }
         public string Order { get; set; }
         public DateTime DatePlaced { get; set; }
-}
+    }
 }

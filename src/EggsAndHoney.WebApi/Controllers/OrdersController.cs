@@ -24,8 +24,8 @@ namespace EggsAndHoney.WebApi.Controllers
         }
 
         [HttpGet]
-		[ProducesResponseType(typeof(ItemCollectionResponseViewModel<OrderViewModel>), 200)]
-		public async Task<IActionResult> Get()
+        [ProducesResponseType(typeof(ItemCollectionResponseViewModel<OrderViewModel>), 200)]
+        public async Task<IActionResult> Get()
         {
             var orders = await _orderService.GetOrders();
             var ordersViewModels = _mapper.Map<IList<OrderViewModel>>(orders.OrderBy(o => o.DatePlaced));
@@ -35,8 +35,8 @@ namespace EggsAndHoney.WebApi.Controllers
         }
 
         [HttpGet("count")]
-		[ProducesResponseType(typeof(ItemCountResponseViewModel), 200)]
-		public async Task<IActionResult> GetCount()
+        [ProducesResponseType(typeof(ItemCountResponseViewModel), 200)]
+        public async Task<IActionResult> GetCount()
         {
             var numberOfOrders = await _orderService.GetNumberOfOrders();
             var itemCountResponseViewModel = new ItemCountResponseViewModel(numberOfOrders);
@@ -45,9 +45,9 @@ namespace EggsAndHoney.WebApi.Controllers
         }
 
         [HttpPost("add")]
-		[ProducesResponseType(201)]
-		[ProducesResponseType(400)]
-		public async Task<IActionResult> Add([FromBody]AddOrderViewModel addOrderViewModel)
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> Add([FromBody]AddOrderViewModel addOrderViewModel)
         {
             if (addOrderViewModel == null)
             {
@@ -66,15 +66,15 @@ namespace EggsAndHoney.WebApi.Controllers
         }
 
         [HttpPost("resolve")]
-		[ProducesResponseType(typeof(ResolvedOrderViewModel), 200)]
-		[ProducesResponseType(400)]
+        [ProducesResponseType(typeof(ResolvedOrderViewModel), 200)]
+        [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-		public async Task<IActionResult> Resolve([FromBody]ItemIdentifierViewModel itemIdentifier)
+        public async Task<IActionResult> Resolve([FromBody]ItemIdentifierViewModel itemIdentifier)
         {
-			if (itemIdentifier == null)
-			{
-				return BadRequest("Request body cannot be empty!");
-			}
+            if (itemIdentifier == null)
+            {
+                return BadRequest("Request body cannot be empty!");
+            }
 
             if (!await _orderService.OrderExists(itemIdentifier.Id))
             {
@@ -84,7 +84,7 @@ namespace EggsAndHoney.WebApi.Controllers
             var resolvedOrder = await _orderService.ResolveOrder(itemIdentifier.Id);
             var resolvedOrderViewModel = _mapper.Map<ResolvedOrderViewModel>(resolvedOrder);
 
-			return Ok(resolvedOrderViewModel);
+            return Ok(resolvedOrderViewModel);
         }
     }
 }

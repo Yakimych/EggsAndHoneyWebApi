@@ -32,10 +32,10 @@ namespace EggsAndHoney.WebApi
             services.AddAutoMapper();
             RegisterOrderService(services);
 
-			services.AddSwaggerGen(c =>
-			{
-				c.SwaggerDoc("v1", new Info { Title = "Eggs&Honey Web API", Version = "v1" });
-			});
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "Eggs&Honey Web API", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,9 +46,9 @@ namespace EggsAndHoney.WebApi
 
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
-			app.UseDefaultFiles();
-			app.UseStaticFiles();
-			app.UseMvc();
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+            app.UseMvc();
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
@@ -68,8 +68,8 @@ namespace EggsAndHoney.WebApi
             }
             else
             {
-				services.AddTransient<IOrderService, OrderService>();
-			}
-		}
+                services.AddTransient<IOrderService, OrderService>();
+            }
+        }
     }
 }
