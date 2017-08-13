@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace EggsAndHoney.Domain.Models
@@ -16,16 +16,17 @@ namespace EggsAndHoney.Domain.Models
         [Required]
         public OrderType OrderType { get; set; }
 
-        public Order(int id, string name, OrderType orderType, DateTime datePlaced)
+        public Order() { }
+
+        public Order(string name, OrderType orderType, DateTime datePlaced)
         {
-            Id = id;
             Name = name;
             OrderType = orderType;
             DatePlaced = datePlaced;
         }
 
-        public Order(int id, ResolvedOrder resolvedOrder)
-            : this(id, resolvedOrder.Name, resolvedOrder.OrderType, resolvedOrder.DatePlaced)
+        public Order(ResolvedOrder resolvedOrder)
+            : this(resolvedOrder.Name, resolvedOrder.OrderType, resolvedOrder.DatePlaced)
         { }
     }
 }

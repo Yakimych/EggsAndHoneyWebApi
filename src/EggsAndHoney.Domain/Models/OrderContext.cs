@@ -2,7 +2,7 @@
 
 namespace EggsAndHoney.Domain.Models
 {
-    class OrderContext : DbContext
+    public class OrderContext : DbContext
     {
         public DbSet<Order> Orders { get; set; }
 

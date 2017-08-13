@@ -1,6 +1,9 @@
-﻿using EggsAndHoney.Domain.Services;
+﻿using System;
+using EggsAndHoney.Domain.Models;
+using EggsAndHoney.Domain.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -62,13 +65,26 @@ namespace EggsAndHoney.WebApi
             var appSettings = Configuration.GetSection("AppSettings");
             var useInMemoryServiceSetting = appSettings["UseInMemoryConfiguration"];
 
+            services.AddTransient<IOrderService, OrderService>();
+
             if (bool.TryParse(useInMemoryServiceSetting, out var useInMemoryService) && useInMemoryService)
             {
-                services.AddTransient<IOrderService, InMemoryOrderService>();
+                var inMemoryDbName = Guid.NewGuid().ToString();
+                services.AddDbContext<OrderContext>(options => options.UseInMemoryDatabase(inMemoryDbName));
+
+                // Is there a better way to do this than fetching the DbContext from the IoC container?
+                // One option would be to actually use DbInitializer no matter what
+                var serviceProvider = services.BuildServiceProvider();
+                var context = serviceProvider.GetService<OrderContext>();
+                var orderTypeSet = context.Set<OrderType>();
+                orderTypeSet.Add(new OrderType { Id = 1, Name = "Eggs" });
+                orderTypeSet.Add(new OrderType { Id = 2, Name = "Honey" });
+                context.SaveChanges();
             }
             else
             {
-                services.AddTransient<IOrderService, OrderService>();
+                var connectionString = Configuration.GetConnectionString("EggsAndHoneyConnectionString");
+                services.AddDbContext<OrderContext>(options => options.UseSqlServer(connectionString));
             }
         }
     }

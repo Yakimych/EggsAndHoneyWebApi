@@ -1,50 +1,87 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using EggsAndHoney.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace EggsAndHoney.Domain.Services
 {
     public class OrderService : IOrderService
     {
-        public Task<int> AddOrder(string name, string orderTypeName)
+        private readonly OrderContext _dbContext;
+        private readonly DbSet<Order> _orderSet;
+        private readonly DbSet<ResolvedOrder> _resolvedOrderSet;
+        private readonly DbSet<OrderType> _orderTypeSet;
+
+        public OrderService(OrderContext orderContext)
         {
-            throw new NotImplementedException();
+            _dbContext = orderContext;
+            _orderSet = _dbContext.Set<Order>();
+            _resolvedOrderSet = _dbContext.Set<ResolvedOrder>();
+            _orderTypeSet = _dbContext.Set<OrderType>();
         }
 
-        public Task<int> GetNumberOfOrders()
+        public async Task<int> AddOrder(string name, string orderTypeName)
         {
-            throw new NotImplementedException();
+            var orderTypeSet = _dbContext.Set<OrderType>();
+            var orderType = orderTypeSet.Single(t => t.Name == orderTypeName);
+
+            if (_orderSet.Any(o => o.Name == name && o.OrderType.Id == orderType.Id))
+                throw new InvalidOperationException($"An order for {orderTypeName} has already been placed by {name}.");
+
+            var addedOrder = await _orderSet.AddAsync(new Order(name, orderType, DateTime.UtcNow));
+            await _dbContext.SaveChangesAsync();
+            return addedOrder.Entity.Id;
         }
 
-        public Task<IEnumerable<Order>> GetOrders()
+        public async Task<int> GetNumberOfOrders()
         {
-            throw new NotImplementedException();
+            return await _orderSet.CountAsync();
         }
 
-        public Task<IEnumerable<ResolvedOrder>> GetResolvedOrders()
+        public async Task<IEnumerable<Order>> GetOrders()
         {
-            throw new NotImplementedException();
+            return await _orderSet.Include(o => o.OrderType).ToListAsync();
         }
 
-        public Task<bool> OrderExists(int orderId)
+        public async Task<IEnumerable<ResolvedOrder>> GetResolvedOrders()
         {
-            throw new NotImplementedException();
+            return  await _resolvedOrderSet.Include(o => o.OrderType).ToListAsync();
         }
 
-        public Task<bool> ResolvedOrderExists(int resolvedOrderId)
+        public async Task<bool> OrderExists(int orderId)
         {
-            throw new NotImplementedException();
+            return await _orderSet.AnyAsync(o => o.Id == orderId);
         }
 
-        public Task<ResolvedOrder> ResolveOrder(int orderId)
+        public async Task<bool> ResolvedOrderExists(int resolvedOrderId)
         {
-            throw new NotImplementedException();
+            return await _resolvedOrderSet.AnyAsync(o => o.Id == resolvedOrderId);
         }
 
-        public Task<Order> UnresolveOrder(int resolvedOrderId)
+        public async Task<ResolvedOrder> ResolveOrder(int orderId)
         {
-            throw new NotImplementedException();
+            var orderToResolve = await _orderSet.Include(o => o.OrderType).SingleAsync(o => o.Id == orderId);
+            var newResolvedOrder = new ResolvedOrder(orderToResolve, DateTime.UtcNow);
+
+            _orderSet.Remove(orderToResolve);
+            var resolvedOrder = await _resolvedOrderSet.AddAsync(newResolvedOrder);
+            await _dbContext.SaveChangesAsync();
+
+            return resolvedOrder.Entity;
+        }
+
+        public async Task<Order> UnresolveOrder(int resolvedOrderId)
+        {
+            var orderToUnresolve = await _resolvedOrderSet.Include(o => o.OrderType).SingleAsync(o => o.Id == resolvedOrderId);
+            var newUnresolvedOrder = new Order(orderToUnresolve);
+
+            _resolvedOrderSet.Remove(orderToUnresolve);
+            var unresolvedOrder = await _orderSet.AddAsync(newUnresolvedOrder);
+            await _dbContext.SaveChangesAsync();
+
+            return unresolvedOrder.Entity;
         }
     }
 }
