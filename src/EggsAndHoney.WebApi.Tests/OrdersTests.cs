@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using EggsAndHoney.WebApi.ViewModels;
+using EggsAndHoney.WebApi.FSharp.ViewModels;
+using Microsoft.FSharp.Collections;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -137,22 +138,22 @@ namespace EggsAndHoney.WebApi.Tests
         }
 
         /* Helper methods */
-        private void AssertOrderIsNotInList(IList<OrderViewModel> orderList, int id, string name, string order)
+        private void AssertOrderIsNotInList(FSharpList<OrderViewModel> orderList, int id, string name, string order)
         {
             Assert.False(orderList.Any(o => o.Id == id && o.Name == name && o.Order == order));
         }
 
-        private void AssertOrderIsInList(IList<OrderViewModel> orderList, int id, string name, string order)
+        private void AssertOrderIsInList(FSharpList<OrderViewModel> orderList, int id, string name, string order)
         {
             Assert.True(orderList.Single(o => o.Name == name && o.Order == order).Id == id);
         }
 
-        private void AssertResolvedOrderIsNotInList(IList<ResolvedOrderViewModel> resolvedOrderList, int id, string name, string order)
+        private void AssertResolvedOrderIsNotInList(FSharpList<ResolvedOrderViewModel> resolvedOrderList, int id, string name, string order)
         {
             Assert.False(resolvedOrderList.Any(o => o.Id == id && o.Name == name && o.Order == order));
         }
 
-        private void AssertResolvedOrderIsInList(IList<ResolvedOrderViewModel> resolvedOrderList, int id, string name, string order)
+        private void AssertResolvedOrderIsInList(FSharpList<ResolvedOrderViewModel> resolvedOrderList, int id, string name, string order)
         {
             Assert.True(resolvedOrderList.Single(o => o.Name == name && o.Order == order).Id == id);
         }
@@ -202,7 +203,7 @@ namespace EggsAndHoney.WebApi.Tests
             return unresolvedOrderViewModel.Id;
         }
 
-        private async Task<IList<OrderViewModel>> GetOrders()
+        private async Task<FSharpList<OrderViewModel>> GetOrders()
         {
             var getResponse = await _client.GetAsync(_ordersEndpoint);
             getResponse.EnsureSuccessStatusCode();
@@ -210,10 +211,10 @@ namespace EggsAndHoney.WebApi.Tests
             var responseString = await getResponse.Content.ReadAsStringAsync();
             var fetchedOrderCollectionViewModel = JsonConvert.DeserializeObject<ItemCollectionResponseViewModel<OrderViewModel>>(responseString);
 
-            return fetchedOrderCollectionViewModel.Items;
+            return fetchedOrderCollectionViewModel.items;
         }
 
-        private async Task<IList<ResolvedOrderViewModel>> GetResolvedOrders()
+        private async Task<FSharpList<ResolvedOrderViewModel>> GetResolvedOrders()
         {
             var getResponse = await _client.GetAsync(_resolvedOrdersEndpoint);
             getResponse.EnsureSuccessStatusCode();
@@ -221,7 +222,7 @@ namespace EggsAndHoney.WebApi.Tests
             var responseString = await getResponse.Content.ReadAsStringAsync();
             var fetchedOrderCollectionViewModel = JsonConvert.DeserializeObject<ItemCollectionResponseViewModel<ResolvedOrderViewModel>>(responseString);
 
-            return fetchedOrderCollectionViewModel.Items;
+            return fetchedOrderCollectionViewModel.items;
         }
 
         private async Task<int> GetOrdersCount()
@@ -232,7 +233,7 @@ namespace EggsAndHoney.WebApi.Tests
             var responseString = await getResponse.Content.ReadAsStringAsync();
             var itemCountResponseViewModel = JsonConvert.DeserializeObject<ItemCountResponseViewModel>(responseString);
 
-            return itemCountResponseViewModel.Count;
+            return itemCountResponseViewModel.count;
         }
     }
 }
