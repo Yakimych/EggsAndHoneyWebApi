@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EggsAndHoney.WebApi", "EggsAndHoney.WebApi\EggsAndHoney.WebApi.csproj", "{F70CE628-D851-498A-A91D-7C9D55FC73B5}"
@@ -6,6 +6,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EggsAndHoney.Domain", "EggsAndHoney.Domain\EggsAndHoney.Domain.csproj", "{C2CD3CB8-F1B5-4C8B-B427-CECB89E4DFB2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EggsAndHoney.WebApi.Tests", "EggsAndHoney.WebApi.Tests\EggsAndHoney.WebApi.Tests.csproj", "{833D7D61-4798-4882-B84F-D2615DFB7C1E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EggsAndHoney.WebApi.FSharp", "EggsAndHoney.WebApi.FSharp\EggsAndHoney.WebApi.FSharp.fsproj", "{91B01FBD-F6ED-4C4C-BF87-80F137CD5041}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,5 +27,9 @@ Global
 		{833D7D61-4798-4882-B84F-D2615DFB7C1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{833D7D61-4798-4882-B84F-D2615DFB7C1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{833D7D61-4798-4882-B84F-D2615DFB7C1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91B01FBD-F6ED-4C4C-BF87-80F137CD5041}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91B01FBD-F6ED-4C4C-BF87-80F137CD5041}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91B01FBD-F6ED-4C4C-BF87-80F137CD5041}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91B01FBD-F6ED-4C4C-BF87-80F137CD5041}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
