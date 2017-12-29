@@ -3,18 +3,30 @@
 open System
 open Microsoft.AspNetCore.Mvc
 open EggsAndHoney.WebApi.FSharp.ViewModels
+open EggsAndHoney.Domain.Services
+open EggsAndHoney.Domain.Models
 
 [<Route("api/v1/[controller]")>]
-type OrdersController () =
+type OrdersController (orderService: IOrderService) =
     inherit Controller()
 
+    member private this.mapOrderToViewModel (order: Order) =
+        {
+            id = order.Id;
+            name = order.Name;
+            order = order.OrderType.ToString();
+            datePlaced = order.DatePlaced
+        }
+
     [<HttpGet>]
+    [<ProducesResponseType(typeof<ItemCollectionResponseViewModel<OrderViewModel>>, 200)>]
     member this.Get() =
-        let fakeOrdersViewModel = { id = 1; name = "Rita"; order = "Honey"; datePlaced = DateTime.Now }
-        let fakeOrdersViewModel' = { id = 2; name = "YaK"; order = "Eggs"; datePlaced = DateTime.Now }
-        let ordersViewModels = [fakeOrdersViewModel; fakeOrdersViewModel']
+        let orders = orderService.GetOrders().Result
+        let ordersViewModels = orders |> Seq.map this.mapOrderToViewModel
         this.Ok(ordersViewModels)
 
     [<HttpGet("count")>]
+    [<ProducesResponseType(typeof<ItemCountResponseViewModel>, 200)>]
     member this.GetCount() =
-        this.Ok(4)
+        let numberOfOrders = orderService.GetNumberOfOrders().Result
+        this.Ok({ count = numberOfOrders })

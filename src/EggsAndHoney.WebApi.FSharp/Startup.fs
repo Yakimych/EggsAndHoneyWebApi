@@ -1,5 +1,7 @@
 namespace EggsAndHoney.WebApi.FSharp
 
+open EggsAndHoney.Domain.Models
+open EggsAndHoney.Domain.Services
 open System
 open System.Collections.Generic
 open System.Linq
@@ -8,6 +10,7 @@ open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.EntityFrameworkCore
 open Swashbuckle.AspNetCore.Swagger
 
 type Startup private () =
@@ -15,10 +18,26 @@ type Startup private () =
         Startup() then
         this.Configuration <- configuration
 
+    member private this.registerOrderService (services: IServiceCollection) =
+        do
+            services.AddTransient<IOrderService, OrderService>() |> ignore
+            let inMemoryDbName = Guid.NewGuid().ToString()
+            services.AddDbContext<OrderContext>(fun options -> options.UseInMemoryDatabase inMemoryDbName |> ignore) |> ignore
+            
+            // Add Eggs and Honey as order types
+            let serviceProvider = services.BuildServiceProvider()
+            let context = serviceProvider.GetService<OrderContext>()
+            let orderTypeSet = context.Set<OrderType>()
+            orderTypeSet.Add(new OrderType( Id = 1, Name = "Eggs" )) |> ignore
+            orderTypeSet.Add(new OrderType( Id = 2, Name = "Honey" )) |> ignore
+            context.SaveChanges() |> ignore
+            context.Dispose()
+        
     // This method gets called by the runtime. Use this method to add services to the container.
     member this.ConfigureServices(services: IServiceCollection) =
         // Add framework services.
         services.AddMvc() |> ignore
+        this.registerOrderService services
         
         services.AddSwaggerGen(fun c -> 
             c.SwaggerDoc("v1", new Info (Title = "Eggs&Honey Web API", Version = "v1"))
