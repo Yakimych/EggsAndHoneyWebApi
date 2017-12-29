@@ -3,18 +3,18 @@
 open System
 
 type OrderViewModel = {
-    Id: int
-    Name: string
-    Order: string
-    DatePlaced: DateTime
+    id: int
+    name: string
+    order: string
+    datePlaced: DateTime
 }
 
 type ResolvedOrderViewModel = {
-    Id: int
-    Name: string
-    Order: string
-    DatePlaced: DateTime
-    DateResolved: DateTime
+    id: int
+    name: string
+    order: string
+    datePlaced: DateTime
+    dateResolved: DateTime
 }
 
 type ItemCollectionResponseViewModel<'a> = {

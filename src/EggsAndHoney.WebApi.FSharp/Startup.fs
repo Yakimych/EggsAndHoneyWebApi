@@ -28,7 +28,7 @@ type Startup private () =
     member this.Configure(app: IApplicationBuilder, env: IHostingEnvironment) =
         app.UseMvc() |> ignore
         
-        app.UseSwagger();
+        app.UseSwagger() |> ignore
         app.UseSwaggerUI(fun c ->
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "Eggs&Honey Web API V1")
         ) |> ignore

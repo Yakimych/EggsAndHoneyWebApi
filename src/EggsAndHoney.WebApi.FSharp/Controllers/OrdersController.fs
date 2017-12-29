@@ -10,8 +10,8 @@ type OrdersController () =
 
     [<HttpGet>]
     member this.Get() =
-        let fakeOrdersViewModel = { Id = 1; Name = "Rita"; Order = "Honey"; DatePlaced = DateTime.Now }
-        let fakeOrdersViewModel' = { Id = 2; Name = "YaK"; Order = "Eggs"; DatePlaced = DateTime.Now }
+        let fakeOrdersViewModel = { id = 1; name = "Rita"; order = "Honey"; datePlaced = DateTime.Now }
+        let fakeOrdersViewModel' = { id = 2; name = "YaK"; order = "Eggs"; datePlaced = DateTime.Now }
         let ordersViewModels = [fakeOrdersViewModel; fakeOrdersViewModel']
         this.Ok(ordersViewModels)
 

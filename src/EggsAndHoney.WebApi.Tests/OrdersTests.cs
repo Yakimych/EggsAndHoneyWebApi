@@ -105,7 +105,7 @@ namespace EggsAndHoney.WebApi.Tests
             }
 
             var fetchedOrders = await GetOrders();
-            var fetchedOrdersInExpectedOrder = fetchedOrders.OrderBy(o => o.DatePlaced).ToList();
+            var fetchedOrdersInExpectedOrder = fetchedOrders.OrderBy(o => o.datePlaced).ToList();
 
             Assert.Equal(fetchedOrdersInExpectedOrder, fetchedOrders);
         }
@@ -132,7 +132,7 @@ namespace EggsAndHoney.WebApi.Tests
             }
 
             var fetchedResolvedOrders = await GetResolvedOrders();
-            var fetchedResolvedOrdersInExpectedOrder = fetchedResolvedOrders.OrderByDescending(o => o.DateResolved).ToList();
+            var fetchedResolvedOrdersInExpectedOrder = fetchedResolvedOrders.OrderByDescending(o => o.dateResolved).ToList();
 
             Assert.Equal(fetchedResolvedOrdersInExpectedOrder, fetchedResolvedOrders);
         }
@@ -140,22 +140,22 @@ namespace EggsAndHoney.WebApi.Tests
         /* Helper methods */
         private void AssertOrderIsNotInList(FSharpList<OrderViewModel> orderList, int id, string name, string order)
         {
-            Assert.False(orderList.Any(o => o.Id == id && o.Name == name && o.Order == order));
+            Assert.DoesNotContain(orderList, o => o.id == id && o.name == name && o.order == order);
         }
 
         private void AssertOrderIsInList(FSharpList<OrderViewModel> orderList, int id, string name, string order)
         {
-            Assert.True(orderList.Single(o => o.Name == name && o.Order == order).Id == id);
+            Assert.True(orderList.Single(o => o.name == name && o.order == order).id == id);
         }
 
         private void AssertResolvedOrderIsNotInList(FSharpList<ResolvedOrderViewModel> resolvedOrderList, int id, string name, string order)
         {
-            Assert.False(resolvedOrderList.Any(o => o.Id == id && o.Name == name && o.Order == order));
+            Assert.DoesNotContain(resolvedOrderList, o => o.id == id && o.name == name && o.order == order);
         }
 
         private void AssertResolvedOrderIsInList(FSharpList<ResolvedOrderViewModel> resolvedOrderList, int id, string name, string order)
         {
-            Assert.True(resolvedOrderList.Single(o => o.Name == name && o.Order == order).Id == id);
+            Assert.True(resolvedOrderList.Single(o => o.name == name && o.order == order).id == id);
         }
 
         private async Task<int> AddOrderAndGetId(string name, string order)
@@ -185,7 +185,7 @@ namespace EggsAndHoney.WebApi.Tests
             var responseBody = await response.Content.ReadAsStringAsync();
             var resolvedOrderViewModel = JsonConvert.DeserializeObject<ResolvedOrderViewModel>(responseBody);
 
-            return resolvedOrderViewModel.Id;
+            return resolvedOrderViewModel.id;
         }
 
         private async Task<int> UnresolveOrderAndGetId(int id)
@@ -200,7 +200,7 @@ namespace EggsAndHoney.WebApi.Tests
             var responseBody = await response.Content.ReadAsStringAsync();
             var unresolvedOrderViewModel = JsonConvert.DeserializeObject<OrderViewModel>(responseBody);
 
-            return unresolvedOrderViewModel.Id;
+            return unresolvedOrderViewModel.id;
         }
 
         private async Task<FSharpList<OrderViewModel>> GetOrders()
