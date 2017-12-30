@@ -17,10 +17,19 @@ type ResolvedOrderViewModel = {
     dateResolved: DateTime
 }
 
+type AddOrderViewModel = {
+    name: string
+    order: string
+}
+
 type ItemCollectionResponseViewModel<'a> = {
     items: list<'a>
 }
 
 type ItemCountResponseViewModel = {
     count: int
+}
+
+type ItemIdentifierViewModel = {
+    id: int
 }
