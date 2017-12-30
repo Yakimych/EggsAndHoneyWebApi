@@ -1,6 +1,7 @@
 ﻿namespace EggsAndHoney.WebApi.FSharp.ViewModels
 
 open System
+open System.ComponentModel.DataAnnotations
 
 type OrderViewModel = {
     id: int
@@ -18,7 +19,10 @@ type ResolvedOrderViewModel = {
 }
 
 type AddOrderViewModel = {
+    [<Required; MaxLength(50)>]
     name: string
+    
+    [<Required; MaxLength(50)>]
     order: string
 }
 
@@ -31,5 +35,6 @@ type ItemCountResponseViewModel = {
 }
 
 type ItemIdentifierViewModel = {
+    [<Required; Range(1, Int32.MaxValue)>]
     id: int
 }
