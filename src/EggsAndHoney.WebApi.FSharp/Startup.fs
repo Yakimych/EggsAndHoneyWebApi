@@ -21,9 +21,10 @@ type Startup private () =
     member private this.registerOrderService (services: IServiceCollection) =
         do
             services.AddTransient<IOrderService, OrderService>() |> ignore
+            // TODO: Do this only if the InMemory config setting is true
             let inMemoryDbName = Guid.NewGuid().ToString()
             services.AddDbContext<OrderContext>(fun options -> options.UseInMemoryDatabase inMemoryDbName |> ignore) |> ignore
-        
+            
     // This method gets called by the runtime. Use this method to add services to the container.
     member this.ConfigureServices(services: IServiceCollection) =
         // Add framework services.

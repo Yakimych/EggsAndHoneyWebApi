@@ -1,17 +1,24 @@
 namespace EggsAndHoney.WebApi.FSharp
 
 open System
-open System.Collections.Generic
 open System.IO
-open System.Linq
-open System.Threading.Tasks
 open Microsoft.AspNetCore
 open Microsoft.AspNetCore.Hosting
-open Microsoft.Extensions.Configuration
-open Microsoft.Extensions.Logging
+open EggsAndHoney.Domain.Models
+open Microsoft.Extensions.DependencyInjection
 
 module Program =
     let exitCode = 0
+    
+    let ensureInMemoryDataExists (serviceProvider: IServiceProvider) =
+        do
+            // TODO: Do this only if the UseInMemoryDatabase config setting is true
+            use context = serviceProvider.GetService<OrderContext>()
+            let orderTypeSet = context.Set<OrderType>()
+            
+            orderTypeSet.Add (new OrderType (Id = 1, Name = "Eggs")) |> ignore
+            orderTypeSet.Add (new OrderType (Id = 2, Name = "Honey")) |> ignore
+            context.SaveChanges() |> ignore
 
     let BuildWebHost args =
         WebHost
@@ -21,6 +28,10 @@ module Program =
 
     [<EntryPoint>]
     let main args =
-        BuildWebHost(args).Run()
+        let webHost = BuildWebHost(args)
+        
+        ensureInMemoryDataExists webHost.Services |> ignore
+        
+        webHost.Run()
 
         exitCode
