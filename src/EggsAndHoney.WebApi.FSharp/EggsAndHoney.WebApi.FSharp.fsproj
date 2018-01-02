@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ViewModels\ViewModels.fs" />
+    <Compile Include="ViewModels\Mapping.fs" />
     <Compile Include="Controllers\OrdersController.fs" />
     <Compile Include="Controllers/ValuesController.fs" />
     <Compile Include="Startup.fs" />

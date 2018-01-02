@@ -3,6 +3,7 @@
 open System
 open Microsoft.AspNetCore.Mvc
 open EggsAndHoney.WebApi.FSharp.ViewModels
+open EggsAndHoney.WebApi.FSharp.Mapping
 open EggsAndHoney.Domain.Services
 open EggsAndHoney.Domain.Models
 
@@ -10,33 +11,47 @@ open EggsAndHoney.Domain.Models
 type OrdersController (orderService: IOrderService) =
     inherit Controller()
 
-    member private this.mapOrderToViewModel (order: Order) =
-        {
-            id = order.Id;
-            name = order.Name;
-            order = order.OrderType.Name;
-            datePlaced = order.DatePlaced
-        }
-
     [<HttpGet>]
     [<ProducesResponseType(typeof<ItemCollectionResponseViewModel<OrderViewModel>>, 200)>]
     member this.Get() =
-        // TODO: Make controllers async
-        let orders = orderService.GetOrders().Result
-        let ordersViewModels = orders |> Seq.map this.mapOrderToViewModel
-        this.Ok(ordersViewModels)
+        async {
+            let! orders = orderService.GetOrders() |> Async.AwaitTask
+            return this.Ok(orders |> toItemCollectionResponseViewModel)
+        }
 
     [<HttpGet("count")>]
     [<ProducesResponseType(typeof<ItemCountResponseViewModel>, 200)>]
     member this.GetCount() =
-        // TODO: Make controllers async
-        let numberOfOrders = orderService.GetNumberOfOrders().Result
-        this.Ok({ count = numberOfOrders })
+        async {
+            let! numberOfOrders = orderService.GetNumberOfOrders() |> Async.AwaitTask
+            return this.Ok({ count = numberOfOrders })
+        }
         
     [<HttpPost("add")>]
     [<ProducesResponseType(typeof<ItemIdentifierViewModel>, 201)>]
-    member this.Add([<FromBody>] addOrderViewModel: AddOrderViewModel) =
-        // TODO: Make controllers async
-        let createdOrderId = orderService.AddOrder(addOrderViewModel.name, addOrderViewModel.order).Result
-        this.StatusCode(201, { id = createdOrderId })
+    [<ProducesResponseType(400)>]
+    member this.Add([<FromBody>] addOrderViewModel: AddOrderViewModel) : Async<IActionResult> =
+        async {
+            try
+                let! createdOrderId = orderService.AddOrder(addOrderViewModel.name, addOrderViewModel.order) |> Async.AwaitTask
+                return this.StatusCode(201, { id = createdOrderId }) :> _
+            with :? AggregateException as ex ->
+                match ex.InnerException with
+                | :? InvalidOperationException -> return this.BadRequest(ex.Message) :> _
+                | _ -> return this.BadRequest() :> _
+        }
+
+    [<HttpPost("resolve")>]
+    [<ProducesResponseType(typeof<ResolvedOrderViewModel>, 200)>]
+    [<ProducesResponseType(400)>]
+    [<ProducesResponseType(404)>]
+    member this.Resolve([<FromBody>] itemIdentifier) : Async<IActionResult> =
+        async {
+            let! orderExists = orderService.OrderExists(itemIdentifier.id) |> Async.AwaitTask
+            match orderExists with
+            | false -> return this.NotFound() :> _
+            | _ ->
+                let! resolvedOrder = orderService.ResolveOrder(itemIdentifier.id) |> Async.AwaitTask
+                return this.Ok(resolvedOrder |> toResolvedOrderViewModel) :> _
+        }
 

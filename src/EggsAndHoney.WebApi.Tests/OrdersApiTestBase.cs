@@ -25,6 +25,7 @@ namespace EggsAndHoney.WebApi.Tests
         public OrdersApiTestBase()
         {
             _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
+            Program.ensureInMemoryDataExists(_server.Host.Services);
             _client = _server.CreateClient();
         }
 
