@@ -7,6 +7,7 @@ open EggsAndHoney.WebApi.FSharp.Mapping
 open EggsAndHoney.Domain.Services
 open EggsAndHoney.Domain.Models
 
+// TODO: Add model validation attribute in order to get the rest of the tests to pass
 [<Route("api/v1/[controller]")>]
 type OrdersController (orderService: IOrderService) =
     inherit Controller()
@@ -16,7 +17,10 @@ type OrdersController (orderService: IOrderService) =
     member this.Get() =
         async {
             let! orders = orderService.GetOrders() |> Async.AwaitTask
-            return this.Ok(orders |> toItemCollectionResponseViewModel)
+            return this.Ok(
+                orders |>
+                Seq.sortBy (fun o -> o.DatePlaced) |>
+                toOrderCollectionResponseViewModel)
         }
 
     [<HttpGet("count")>]

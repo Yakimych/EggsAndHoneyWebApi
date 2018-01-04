@@ -6,7 +6,7 @@
     <Compile Include="ViewModels\ViewModels.fs" />
     <Compile Include="ViewModels\Mapping.fs" />
     <Compile Include="Controllers\OrdersController.fs" />
-    <Compile Include="Controllers/ValuesController.fs" />
+    <Compile Include="Controllers\ResolvedOrdersController.fs" />
     <Compile Include="Startup.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
