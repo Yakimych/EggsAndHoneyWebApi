@@ -4,11 +4,12 @@ open System
 open Microsoft.AspNetCore.Mvc
 open EggsAndHoney.WebApi.FSharp.ViewModels
 open EggsAndHoney.WebApi.FSharp.Mapping
+open EggsAndHoney.WebApi.FSharp.Filters
 open EggsAndHoney.Domain.Services
 open EggsAndHoney.Domain.Models
 
-// TODO: Add model validation attribute in order to get the rest of the tests to pass
 [<Route("api/v1/[controller]")>]
+[<ValidateModel>]
 type OrdersController (orderService: IOrderService) =
     inherit Controller()
 

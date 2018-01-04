@@ -3,6 +3,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Filters\ModelValidationFilter.fs" />
     <Compile Include="ViewModels\ViewModels.fs" />
     <Compile Include="ViewModels\Mapping.fs" />
     <Compile Include="Controllers\OrdersController.fs" />
