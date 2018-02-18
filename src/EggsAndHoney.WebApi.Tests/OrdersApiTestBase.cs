@@ -1,7 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Text;
+using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 
 namespace EggsAndHoney.WebApi.Tests
 {
@@ -23,7 +26,16 @@ namespace EggsAndHoney.WebApi.Tests
 
         public OrdersApiTestBase()
         {
-            _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
+            // Quick way to avoid Automapper reinitialization warnings
+            // https://stackoverflow.com/a/47552436/240424
+            ServiceCollectionExtensions.UseStaticRegistration = false;
+            
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: false)
+                .Build();
+            
+            _server = new TestServer(new WebHostBuilder().UseConfiguration(configuration).UseStartup<Startup>());
+            Program.EnsureInMemoryDataExists(_server.Host.Services);
             _client = _server.CreateClient();
         }
 

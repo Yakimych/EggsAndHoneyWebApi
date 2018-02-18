@@ -14,17 +14,12 @@ namespace EggsAndHoney.WebApi
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IConfiguration configuration)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-            Configuration = builder.Build();
+            Configuration = configuration;
         }
 
-        public IConfigurationRoot Configuration { get; }
+        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -71,15 +66,6 @@ namespace EggsAndHoney.WebApi
             {
                 var inMemoryDbName = Guid.NewGuid().ToString();
                 services.AddDbContext<OrderContext>(options => options.UseInMemoryDatabase(inMemoryDbName));
-
-                // Is there a better way to do this than fetching the DbContext from the IoC container?
-                // One option would be to actually use DbInitializer no matter what
-                var serviceProvider = services.BuildServiceProvider();
-                var context = serviceProvider.GetService<OrderContext>();
-                var orderTypeSet = context.Set<OrderType>();
-                orderTypeSet.Add(new OrderType { Id = 1, Name = "Eggs" });
-                orderTypeSet.Add(new OrderType { Id = 2, Name = "Honey" });
-                context.SaveChanges();
             }
             else
             {
