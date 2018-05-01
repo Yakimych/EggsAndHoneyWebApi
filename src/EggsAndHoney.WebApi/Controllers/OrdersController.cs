@@ -44,6 +44,7 @@ namespace EggsAndHoney.WebApi.Controllers
             return Ok(itemCountResponseViewModel);
         }
 
+        [HttpPost("")]
         [HttpPost("add")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
