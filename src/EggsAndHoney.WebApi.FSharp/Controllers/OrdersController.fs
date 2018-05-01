@@ -32,7 +32,7 @@ type OrdersController (orderService: IOrderService) =
             return this.Ok({ count = numberOfOrders })
         }
         
-    [<HttpPost("add")>]
+    [<HttpPost("")>]
     [<ProducesResponseType(typeof<ItemIdentifierViewModel>, 201)>]
     [<ProducesResponseType(400)>]
     member this.Add([<FromBody>] addOrderViewModel: AddOrderViewModel) : Async<IActionResult> =
